@@ -77,3 +77,5 @@ generated-schema.graphql
 
 # Project specific
 cursor.md
+.wwebjs_cache
+.wwebjs_auth
