@@ -1,0 +1,39 @@
+{
+  "name": "brainweb",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Graph-based learning platform MVP",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "generate-graphql-schema": "tsx scripts/generate-schema.ts",
+    "ingest-content": "tsx scripts/ingest.ts"
+  },
+  "dependencies": {
+    "@apollo/server": "^5.0.0",
+    "@as-integrations/next": "^4.0.0",
+    "@neo4j/graphql": "^7.2.13",
+    "graphql": "^16.11.0",
+    "neo4j-driver": "^5.28.2",
+    "next": "15.5.4",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "reactflow": "^11.11.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "15.5.4",
+    "prettier": "^3.6.2",
+    "tailwindcss": "^4",
+    "tsx": "^4.20.6",
+    "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

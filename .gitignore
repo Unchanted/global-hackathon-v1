@@ -5,6 +5,9 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 .pnpm-store/
+/.pnp
+.pnp.js
+.yarn/install-state.gz
 
 # Python
 __pycache__/
@@ -33,11 +36,18 @@ build/
 out/
 .nuxt/
 .cache/
+/.next/
+/out/
+/build
+
+# Production
+/build
 
 # Environment files
 .env
 .env.local
 .env.*.local
+.env*.local
 
 # Logs
 logs/
@@ -47,9 +57,23 @@ logs/
 coverage/
 .nyc_output/
 .pytest_cache/
+/coverage
 
 # Misc
 .tmp/
 temp/
 *.bak
+*.pem
 
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Generated files
+generated-schema.graphql
+
+# Project specific
+cursor.md
