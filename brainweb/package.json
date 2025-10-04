@@ -1,41 +1,22 @@
 {
-  "name": "brainweb",
-  "version": "0.1.0",
+  "name": "shadcn-ui-monorepo",
+  "version": "0.0.1",
   "private": true,
-  "description": "Graph-based learning platform MVP",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint .",
-    "generate-graphql-schema": "tsx scripts/generate-schema.ts",
-    "ingest-content": "tsx scripts/ingest.ts"
-  },
-  "dependencies": {
-    "@apollo/server": "^5.0.0",
-    "@as-integrations/next": "^4.0.0",
-    "@neo4j/graphql": "^7.2.13",
-    "graphql": "^16.11.0",
-    "neo4j-driver": "^5.28.2",
-    "next": "15.5.4",
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
-    "reactflow": "^11.11.4"
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "lint": "turbo lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "autoprefixer": "^10.4.21",
-    "eslint": "^9",
-    "eslint-config-next": "15.5.4",
-    "postcss": "^8.5.6",
+    "@workspace/eslint-config": "workspace:*",
+    "@workspace/typescript-config": "workspace:*",
     "prettier": "^3.6.2",
-    "tailwindcss": "^3.4.18",
-    "tsx": "^4.20.6",
-    "typescript": "^5"
+    "turbo": "^2.5.5",
+    "typescript": "5.7.3"
   },
+  "packageManager": "pnpm@10.4.1",
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20"
   }
 }
