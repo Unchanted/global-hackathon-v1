@@ -1,7 +1,7 @@
 require('dotenv').config();
 const { Client } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
-const { getIntent, getActiveStorySession, getCompletedStoryContent, getUserName, hasUserCompletedNameCollection } = require('./services/intent.js');
+const { getIntent, getActiveStorySession, getCompletedStoryContent, getUserName, hasUserCompletedNameCollection, identifyGrandparentByName, extractGrandparentFromMessage } = require('./services/intent.js');
 const { SupabaseService } = require('./services/supabase-client.js');
 
 // Initialize services
@@ -44,8 +44,26 @@ client.on('message', async (msg) => {
         // Get user ID (phone number)
         const userId = msg.from.split('@')[0];
         
-        // Get or create grandparent profile
-        let grandparent = await supabase.getGrandparentByWhatsApp(userId);
+        // Try to identify grandparent by name first, then by phone number
+        let grandparent = null;
+        
+        // Check if this message contains a known grandparent name
+        const identifiedGrandparent = extractGrandparentFromMessage(msg.body);
+        if (identifiedGrandparent) {
+            console.log('👴 Identified grandparent by name:', identifiedGrandparent.name);
+            // Try to find existing profile by WhatsApp number
+            const existingProfile = await supabase.getGrandparentByWhatsApp(identifiedGrandparent.whatsapp_number);
+            if (existingProfile.data) {
+                grandparent = existingProfile;
+                console.log('✅ Found existing profile for:', grandparent.data.name);
+            }
+        }
+        
+        // If not found by name, try by phone number
+        if (!grandparent) {
+            grandparent = await supabase.getGrandparentByWhatsApp(userId);
+        }
+        
         if (!grandparent.data) {
             console.log('👴 Creating new grandparent profile for:', userId);
             const { data: newGrandparent, error } = await supabase.createGrandparent(

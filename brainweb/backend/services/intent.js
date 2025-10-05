@@ -337,4 +337,60 @@ function hasUserCompletedNameCollection(userId) {
   return userState?.nameCollected || false;
 }
 
-module.exports = { getIntent, getActiveStorySession, getCompletedStoryContent, getUserName, hasUserCompletedNameCollection };
+// Function to identify grandparent by name
+function identifyGrandparentByName(name) {
+  // Known grandparents database (in a real app, this would come from Supabase)
+  const knownGrandparents = {
+    'rose': {
+      whatsapp_number: '1234567890',
+      name: 'Rose Thompson',
+      id: 'rose_thompson_id'
+    },
+    'rose thompson': {
+      whatsapp_number: '1234567890',
+      name: 'Rose Thompson',
+      id: 'rose_thompson_id'
+    },
+    'grandma rose': {
+      whatsapp_number: '1234567890',
+      name: 'Rose Thompson',
+      id: 'rose_thompson_id'
+    }
+  };
+
+  const normalizedName = name.toLowerCase().trim();
+  return knownGrandparents[normalizedName] || null;
+}
+
+// Function to get grandparent by name from message
+function extractGrandparentFromMessage(message) {
+  // Look for patterns that indicate a grandparent name
+  const patterns = [
+    /(?:i am|i'm|my name is|this is)\s+([a-zA-Z\s]+)/gi,
+    /(?:grandma|grandpa|grandmother|grandfather)\s+([a-zA-Z\s]+)/gi,
+    /^([a-zA-Z\s]+)$/gi // Direct name input
+  ];
+
+  for (const pattern of patterns) {
+    const matches = [...message.matchAll(pattern)];
+    for (const match of matches) {
+      const name = match[1] || match[0];
+      const grandparent = identifyGrandparentByName(name);
+      if (grandparent) {
+        return grandparent;
+      }
+    }
+  }
+
+  return null;
+}
+
+module.exports = { 
+  getIntent, 
+  getActiveStorySession, 
+  getCompletedStoryContent, 
+  getUserName, 
+  hasUserCompletedNameCollection,
+  identifyGrandparentByName,
+  extractGrandparentFromMessage
+};
