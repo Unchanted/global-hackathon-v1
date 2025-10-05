@@ -3,9 +3,11 @@ const { Client } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 const { getIntent, getActiveStorySession, getCompletedStoryContent, getUserName, hasUserCompletedNameCollection, identifyGrandparentByName, extractGrandparentFromMessage } = require('./services/intent.js');
 const { SupabaseService } = require('./services/supabase-client.js');
+const VoiceTranscriptionService = require('./services/voiceTranscription.js');
 
 // Initialize services
 const supabase = new SupabaseService();
+const voiceTranscription = new VoiceTranscriptionService();
 
 const client = new Client({
     puppeteer: {
@@ -44,11 +46,63 @@ client.on('message', async (msg) => {
         // Get user ID (phone number)
         const userId = msg.from.split('@')[0];
         
+        // Handle voice messages
+        let messageContent = msg.body;
+        let messageType = msg.type;
+        let voiceTranscript = null;
+        let voiceUrl = null;
+        
+        if (msg.type === 'ptt') { // Voice message
+            console.log('🎤 Voice message detected!');
+            
+            if (!voiceTranscription.isConfigured()) {
+                console.log('⚠️ Gemini API key not configured. Voice transcription disabled.');
+                await msg.reply('I received your voice message, but I need to set up voice transcription to understand it. Please send a text message for now.');
+                return;
+            }
+            
+            try {
+                // Get voice message media
+                const media = await msg.downloadMedia();
+                if (media) {
+                    console.log('📁 Voice file downloaded, size:', media.data.length, 'bytes');
+                    
+                    // Transcribe the voice message
+                    const transcriptionResult = await voiceTranscription.transcribeVoiceMessage(
+                        Buffer.from(media.data, 'base64'),
+                        `voice_${msg.timestamp}.ogg`
+                    );
+                    
+                    if (transcriptionResult.success) {
+                        voiceTranscript = transcriptionResult.transcript;
+                        messageContent = voiceTranscript;
+                        messageType = 'voice_note';
+                        console.log('✅ Voice transcribed:', voiceTranscript);
+                        
+                        // Store voice URL if available
+                        voiceUrl = media.filename || `voice_${msg.timestamp}.ogg`;
+                    } else {
+                        console.error('❌ Voice transcription failed:', transcriptionResult.error);
+                        await msg.reply('I had trouble understanding your voice message. Could you please try sending it again or type your message instead?');
+                        return;
+                    }
+                } else {
+                    console.error('❌ Failed to download voice media');
+                    await msg.reply('I couldn\'t download your voice message. Please try sending it again.');
+                    return;
+                }
+            } catch (error) {
+                console.error('❌ Error processing voice message:', error);
+                await msg.reply('I had trouble processing your voice message. Please try typing your message instead.');
+                return;
+            }
+        }
+        
         // Try to identify grandparent by name first, then by phone number
         let grandparent = null;
         
         // Check if this message contains a known grandparent name
-        const identifiedGrandparent = extractGrandparentFromMessage(msg.body);
+        const identifiedGrandparent = extractGrandparentFromMessage(messageContent);
         if (identifiedGrandparent) {
             console.log('👴 Identified grandparent by name:', identifiedGrandparent.name);
             // Try to find existing profile by WhatsApp number
@@ -90,14 +144,17 @@ client.on('message', async (msg) => {
         console.log('💬 Saving conversation to database...');
         const conversationData = {
             id: msg.id._serialized,
-            type: msg.type,
-            content: msg.body,
+            type: messageType,
+            content: messageContent,
             timestamp: new Date(msg.timestamp * 1000).toISOString(),
             rawData: {
                 from: msg.from,
                 to: msg.to,
                 hasMedia: msg.hasMedia,
-                mediaUrl: msg.hasMedia ? await msg.downloadMedia() : null
+                originalType: msg.type,
+                voiceTranscript: voiceTranscript,
+                voiceUrl: voiceUrl,
+                mediaUrl: msg.hasMedia && msg.type !== 'ptt' ? await msg.downloadMedia() : null
             }
         };
 
@@ -113,7 +170,7 @@ client.on('message', async (msg) => {
         }
 
         // Process message with AI
-        const intentResponse = await getIntent(msg.body, userId);
+        const intentResponse = await getIntent(messageContent, userId);
         console.log('AI Response:', intentResponse);
         
         // Parse the JSON response and handle accordingly
@@ -146,9 +203,41 @@ client.on('message', async (msg) => {
             }
         }
         
+        // Handle onboarding completion
+        if (intent.intent === 'onboarding_complete' && intent.onboarding_data) {
+            console.log('🎉 Onboarding completed for:', intent.onboarding_data.name);
+            console.log('📊 Onboarding data:', intent.onboarding_data);
+            
+            // Update local grandparent object with onboarding data
+            if (grandparent.data) {
+                grandparent.data.name = intent.onboarding_data.name;
+                grandparent.data.location = intent.onboarding_data.location;
+                grandparent.data.birth_year = intent.onboarding_data.birth_year;
+                grandparent.data.preferred_language = intent.onboarding_data.preferred_language;
+            }
+        }
+        
+        // Handle onboarding steps
+        if (intent.intent === 'onboarding_step' || intent.intent === 'onboarding_start') {
+            console.log('📝 Onboarding step:', intent.onboarding_step);
+            console.log('📊 Current data:', intent.onboarding_data || {});
+        }
+        
         if (intent.message) {
-            console.log('Would send message:\n', intent.message);
-            // await msg.reply(intent.message); // Commented out for dev purposes
+            // Add voice message acknowledgment if this was a voice message
+            let responseMessage = intent.message;
+            if (voiceTranscript) {
+                // Check if transcription seems too short or unclear
+                if (voiceTranscript.length < 3) {
+                    responseMessage = `🎤 *Voice Message Received*\n\n⚠️ *Transcription unclear* - I heard: _"${voiceTranscript}"_\n\nCould you please try speaking a bit more clearly or send a text message instead?\n\n${intent.message}`;
+                } else {
+                    responseMessage = `🎤 *Voice Message Successfully Transcribed*\n\n📝 *What I heard:*\n_"${voiceTranscript}"_\n\n✅ *Stored in your memory collection*\n\n${intent.message}`;
+                }
+            }
+            
+            console.log('Would send message:\n', responseMessage);
+            
+            // await msg.reply(responseMessage); // Commented out for dev purposes
             
             // Handle story completion and memory creation
             if (intent.story_status === 'complete') {
