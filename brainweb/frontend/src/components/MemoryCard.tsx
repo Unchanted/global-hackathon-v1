@@ -44,21 +44,28 @@ export default function MemoryCard({ memory, onClick }: MemoryCardProps) {
   return (
     <div
       onClick={onClick}
-      className="bg-white border border-gray-200 rounded-lg p-4 cursor-pointer hover:shadow-md hover:border-gray-300 transition-all duration-200"
+      className="bg-white border border-gray-200 rounded-xl p-4 cursor-pointer hover:shadow-lg hover:border-blue-300 transition-all duration-300 group hover:-translate-y-1"
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
-        <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getMemoryTypeColor(memory.memory_type)}`}>
+        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getMemoryTypeColor(memory.memory_type)} group-hover:scale-105 transition-transform duration-200`}>
           {getMemoryTypeIcon(memory.memory_type)}
           <span className="ml-1 capitalize">{memory.memory_type}</span>
         </span>
-        <span className="text-xs text-gray-500">
-          {format(new Date(memory.published_at || memory.created_at), 'MMM d')}
-        </span>
+        <div className="flex items-center space-x-2">
+          <span className="text-xs text-gray-500">
+            {format(new Date(memory.published_at || memory.created_at), 'MMM d')}
+          </span>
+          {memory.source_conversation_ids.length > 1 && (
+            <span className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full font-medium">
+              {memory.source_conversation_ids.length} parts
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Title */}
-      <h3 className="text-lg font-semibold text-gray-900 mb-3 line-clamp-2 leading-tight">
+      <h3 className="text-lg font-semibold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors line-clamp-2 leading-tight">
         {memory.title}
       </h3>
 
@@ -70,12 +77,21 @@ export default function MemoryCard({ memory, onClick }: MemoryCardProps) {
       {/* Footer */}
       <div className="flex items-center justify-between pt-3 border-t border-gray-100">
         <div className="flex items-center text-gray-600 text-sm">
-          <User className="h-3 w-3 mr-1" />
-          <span>{memory.grandparent?.name || 'Unknown'}</span>
+          <div className="w-6 h-6 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center mr-2 text-xs font-bold text-white">
+            {memory.grandparent?.name?.charAt(0) || '?'}
+          </div>
+          <span className="font-medium">{memory.grandparent?.name || 'Unknown'}</span>
         </div>
-        <div className="flex items-center text-gray-500 text-xs">
-          <MessageCircle className="h-3 w-3 mr-1" />
-          <span>{memory.source_conversation_ids.length}</span>
+        <div className="flex items-center space-x-2">
+          <div className="flex items-center text-gray-500 text-xs">
+            <MessageCircle className="h-3 w-3 mr-1" />
+            <span>{memory.source_conversation_ids.length}</span>
+          </div>
+          {memory.status === 'published' && (
+            <span className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full font-medium">
+              ✨ Published
+            </span>
+          )}
         </div>
       </div>
     </div>
