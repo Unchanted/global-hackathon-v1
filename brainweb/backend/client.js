@@ -4,10 +4,12 @@ const qrcode = require('qrcode-terminal');
 const { getIntent, getActiveStorySession, getCompletedStoryContent, getUserName, hasUserCompletedNameCollection, identifyGrandparentByName, extractGrandparentFromMessage } = require('./services/intent.js');
 const { SupabaseService } = require('./services/supabase-client.js');
 const VoiceTranscriptionService = require('./services/voiceTranscription.js');
+const VideoGenerationService = require('./services/videoGenerationNoTTS.js');
 
 // Initialize services
 const supabase = new SupabaseService();
 const voiceTranscription = new VoiceTranscriptionService();
+const videoGeneration = new VideoGenerationService();
 
 const client = new Client({
     puppeteer: {
@@ -237,7 +239,7 @@ client.on('message', async (msg) => {
             
             console.log('Would send message:\n', responseMessage);
             
-            // await msg.reply(responseMessage); // Commented out for dev purposes
+            await msg.reply(responseMessage);
             
             // Handle story completion and memory creation
             if (intent.story_status === 'complete') {
@@ -290,6 +292,70 @@ client.on('message', async (msg) => {
                     console.log('📖 Memory title:', memory.title);
                     console.log('📝 Memory type:', memory.memory_type);
                 }
+            }
+            
+            // Handle video generation command
+            if (msg.body.toLowerCase().includes('create video') || msg.body.toLowerCase().includes('make video')) {
+                console.log('🎬 Video generation command received');
+                
+                // Check if video generation is configured
+                if (!videoGeneration.isConfigured()) {
+                    await msg.reply('🎬 Video generation is not currently available. Please try again later.');
+                    return;
+                }
+                
+                // Get recent memories for this grandparent
+                const { data: memories, error: memoriesError } = await supabase.client
+                    .from('memories')
+                    .select('id, title, content, memory_type')
+                    .eq('grandparent_id', grandparent.data.id)
+                    .eq('status', 'published')
+                    .order('created_at', { ascending: false })
+                    .limit(5); // Limit to 5 most recent memories
+                
+                if (memoriesError || !memories || memories.length === 0) {
+                    await msg.reply('📚 I couldn\'t find any memories to create a video from. Please share some stories first!');
+                    return;
+                }
+                
+                await msg.reply('🎬 Creating your memory video! This may take a few minutes...');
+                
+                try {
+                    // Generate video
+                    const result = await videoGeneration.generateMemoryVideo(
+                        grandparent.data.id,
+                        memories.map(m => m.id),
+                        {
+                            duration: '2-3 minutes',
+                            voice: 'en-US-Neural2-F',
+                            language: 'en-US'
+                        }
+                    );
+                    
+                    if (result.success) {
+                        await msg.reply(`🎉 Your memory video is ready!\n\n📹 *Video Details:*\n• Duration: ${Math.round(result.duration / 60)} minutes\n• Memories included: ${result.memoriesIncluded}\n• Slides: ${result.slidesCount}\n\n🔗 Watch your video: ${result.videoUrl}`);
+                        
+                        // Save video metadata to database
+                        await supabase.client
+                            .from('memory_videos')
+                            .insert({
+                                grandparent_id: grandparent.data.id,
+                                video_url: result.videoUrl,
+                                duration: result.duration,
+                                slides_count: result.slidesCount,
+                                memories_included: result.memoriesIncluded,
+                                status: 'completed',
+                                created_at: new Date().toISOString()
+                            });
+                    } else {
+                        await msg.reply('❌ Sorry, there was an error creating your video. Please try again later.');
+                    }
+                } catch (error) {
+                    console.error('❌ Video generation error:', error);
+                    await msg.reply('❌ Sorry, there was an error creating your video. Please try again later.');
+                }
+                
+                return;
             }
             
             // Log story session status
