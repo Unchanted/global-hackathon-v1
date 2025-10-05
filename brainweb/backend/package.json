@@ -1,0 +1,22 @@
+{
+  "name": "memory-keeper-backend",
+  "version": "1.0.0",
+  "description": "Backend services for Memory Keeper for Grandparents",
+  "main": "client.js",
+  "scripts": {
+    "start": "node client.js",
+    "dev": "node client.js",
+    "test-supabase": "node utils/test-supabase-connection.js",
+    "test-db-flow": "node test-database-flow.js"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@supabase/supabase-js": "^2.39.0",
+    "dotenv": "^16.3.1",
+    "qrcode-terminal": "^0.12.0",
+    "whatsapp-web.js": "^1.34.1"
+  },
+  "keywords": ["whatsapp", "bot", "memory-keeper", "grandparents", "ai"],
+  "author": "",
+  "license": "ISC"
+}
