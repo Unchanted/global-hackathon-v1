@@ -85,44 +85,41 @@ export default function MemoryModal({ memory, onClose }: MemoryModalProps) {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded max-w-4xl w-full max-h-[90vh] overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+        <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <div className="flex items-center space-x-3">
-            <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getMemoryTypeColor(memory.memory_type)}`}>
+            <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getMemoryTypeColor(memory.memory_type)}`}>
               {getMemoryTypeIcon(memory.memory_type)}
-              <span className="ml-2 capitalize">{memory.memory_type}</span>
+              <span className="ml-1 capitalize">{memory.memory_type}</span>
             </span>
-            <div className="flex items-center text-gray-500 text-sm">
-              <Calendar className="h-4 w-4 mr-1" />
-              {format(new Date(memory.published_at || memory.created_at), 'MMMM d, yyyy')}
-            </div>
+            <span className="text-sm text-gray-500">
+              {format(new Date(memory.published_at || memory.created_at), 'MMM d, yyyy')}
+            </span>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded transition-colors"
+            className="p-1 hover:bg-gray-100 rounded transition-colors"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+        <div className="p-4 overflow-y-auto max-h-[calc(90vh-100px)]">
           {/* Memory Title and Author */}
-          <div className="mb-6">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">{memory.title}</h1>
-            <div className="flex items-center text-gray-600">
-              <User className="h-4 w-4 mr-2" />
-              <span>By {memory.grandparent?.name || 'Unknown Grandparent'}</span>
+          <div className="mb-4">
+            <h1 className="text-xl font-semibold text-gray-900 mb-2">{memory.title}</h1>
+            <div className="flex items-center text-gray-600 text-sm">
+              <User className="h-3 w-3 mr-1" />
+              <span>By {memory.grandparent?.name || 'Unknown'}</span>
             </div>
           </div>
 
           {/* Full Memory Content */}
-          <div className="mb-8">
-            <div className="prose max-w-none">
-              <div className="bg-gray-50 p-6 rounded-lg">
-                <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">
-                  {memory.content}
-                </p>
-              </div>
+          <div className="mb-6">
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <p className="text-gray-800 leading-relaxed whitespace-pre-wrap text-sm">
+                {memory.content}
+              </p>
             </div>
           </div>
 
@@ -216,20 +213,18 @@ export default function MemoryModal({ memory, onClose }: MemoryModalProps) {
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t border-gray-200 bg-gray-50">
+        <div className="p-4 border-t border-gray-200 bg-gray-50">
           <div className="flex items-center justify-between">
             <div className="flex items-center text-gray-600 text-sm">
-              <MessageCircle className="h-4 w-4 mr-1" />
-              <span>{memory.source_conversation_ids.length} conversation parts</span>
+              <MessageCircle className="h-3 w-3 mr-1" />
+              <span>{memory.source_conversation_ids.length} parts</span>
             </div>
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={onClose}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Close
-              </button>
-            </div>
+            <button
+              onClick={onClose}
+              className="px-3 py-1.5 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors"
+            >
+              Close
+            </button>
           </div>
         </div>
       </div>

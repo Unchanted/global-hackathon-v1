@@ -6,14 +6,12 @@ import { format } from 'date-fns'
 import { Heart, MessageCircle, Calendar, User, BookOpen, Filter, Search } from 'lucide-react'
 import MemoryCard from '@/components/MemoryCard'
 import MemoryModal from '@/components/MemoryModal'
-import DemoMode from '@/components/DemoMode'
-import { SidebarInset, SidebarTrigger, useSidebar } from '@/components/ui/sidebar'
-import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable'
+// import DemoMode from '@/components/DemoMode'
+import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
 import { useFilters } from '@/components/filter-context'
 
 export default function MemoryBlog() {
   const { searchTerm, selectedGrandparent, selectedType } = useFilters()
-  const { state: sidebarState } = useSidebar()
   const [memories, setMemories] = useState<Memory[]>([])
   const [grandparents, setGrandparents] = useState<GrandparentProfile[]>([])
   const [loading, setLoading] = useState(true)
@@ -82,199 +80,150 @@ export default function MemoryBlog() {
 
   return (
     <SidebarInset>
-      <div className="h-screen bg-white flex flex-col">
-        {/* Header - Only show when sidebar is collapsed */}
-        {sidebarState === 'collapsed' && (
-          <header className="border-b border-gray-200 px-6 py-4 bg-gradient-to-r from-blue-50 to-indigo-50">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <SidebarTrigger />
-                <div className="flex items-center space-x-4 animate-in fade-in-0 slide-in-from-left-2 duration-200">
-                  <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-lg flex items-center justify-center shadow-sm">
-                    <BookOpen className="h-5 w-5 text-white" />
-                  </div>
-                  <div>
-                    <h1 className="text-xl font-bold text-gray-900 tracking-tight">
-                      <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                        Memory
-                      </span>
-                      <span className="text-gray-800 ml-2">Keeper</span>
-                    </h1>
-                    <p className="text-sm text-gray-600 font-medium">Family memories and stories</p>
-                  </div>
+      <div className="h-screen bg-gray-50 flex flex-col">
+        {/* Simplified Header */}
+        <header className="border-b border-gray-200 bg-white px-6 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <SidebarTrigger />
+              <div className="flex items-center space-x-3">
+                <div className="w-7 h-7 bg-blue-600 rounded-md flex items-center justify-center">
+                  <BookOpen className="h-4 w-4 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-lg font-semibold text-gray-900">Memory Keeper</h1>
+                  <p className="text-xs text-gray-500">Family memories and stories</p>
                 </div>
               </div>
             </div>
-          </header>
-        )}
-
-        {/* Content Area with Resizable Layout */}
-        <div className="flex-1 overflow-hidden">
-          {/* Sidebar Trigger - Only show when sidebar is expanded */}
-          {sidebarState === 'expanded' && (
-            <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
-              <div className="flex items-center">
-                <SidebarTrigger />
-                <div className="ml-3">
-                  <h2 className="text-sm font-semibold text-gray-700">Memory Dashboard</h2>
-                  <p className="text-xs text-gray-500">Toggle sidebar to see navigation</p>
+          </div>
+        </header>
+        {/* Main Content Area */}
+        <div className="flex-1 overflow-y-auto bg-gray-50">
+          <div className="max-w-7xl mx-auto p-6">
+            {/* Stats Overview */}
+            <div className="mb-8">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-2xl font-semibold text-gray-900">Memory Dashboard</h2>
+                  <p className="text-sm text-gray-600 mt-1">Overview and statistics</p>
+                </div>
+                <div className="flex items-center space-x-4 text-sm text-gray-600">
+                  <div className="flex items-center">
+                    <Filter className="h-4 w-4 mr-1" />
+                    <span>Filters active</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
-          
-          <ResizablePanelGroup direction="horizontal" className={`${sidebarState === 'expanded' ? 'h-[calc(100%-72px)]' : 'h-full'}`}>
-            {/* Left Panel - Stats and Overview */}
-            <ResizablePanel defaultSize={30} minSize={20} maxSize={40}>
-              <div className="h-full overflow-y-auto p-6 bg-gradient-to-br from-gray-50 to-blue-50">
-                {/* Page Title */}
-                <div className="mb-8">
-                  {sidebarState === 'expanded' && (
-                    <div className="animate-in fade-in-0 slide-in-from-top-2 duration-200">
-                      {/* <h1 className="text-3xl font-bold text-gray-900 mb-3 tracking-tight">
-                        <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                          Memory
-                        </span>
-                        <span className="text-gray-800 ml-2">Dashboard</span>
-                      </h1> */}
-                      <p className="text-base text-gray-600 font-medium flex items-center">
-                        <span className="text-lg mr-2">👋</span>
-                        Welcome to <span className="font-semibold text-blue-600 ml-1">Memory Keeper</span>!
-                      </p>
-                    </div>
-                  )}
-                  {sidebarState === 'collapsed' && (
-                    <div className="mb-6 animate-in fade-in-0 slide-in-from-top-2 duration-200">
-                      <h2 className="text-2xl font-bold text-gray-900 mb-2">Dashboard</h2>
-                      <p className="text-sm text-gray-600">Overview and statistics</p>
-                    </div>
-                  )}
-                </div>
 
-                {/* Stats Cards */}
-                <div className="space-y-5">
-                  <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
+              {/* Stats Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div className="bg-white border border-gray-200 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
                     <div className="flex items-center">
-                      <div className="w-10 h-10 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl flex items-center justify-center mr-4 shadow-sm">
-                        <BookOpen className="h-5 w-5 text-blue-600" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-600 uppercase tracking-wide">Total Memories</p>
-                        <p className="text-2xl font-bold text-gray-900 mt-1">{memories.length}</p>
-                      </div>
+                      <BookOpen className="h-4 w-4 text-blue-600 mr-2" />
+                      <span className="text-sm text-gray-600">Total Memories</span>
                     </div>
-                  </div>
-                  
-                  <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
-                    <div className="flex items-center">
-                      <div className="w-10 h-10 bg-gradient-to-br from-green-100 to-green-200 rounded-xl flex items-center justify-center mr-4 shadow-sm">
-                        <User className="h-5 w-5 text-green-600" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-600 uppercase tracking-wide">Grandparents</p>
-                        <p className="text-2xl font-bold text-gray-900 mt-1">{grandparents.length}</p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
-                    <div className="flex items-center">
-                      <div className="w-10 h-10 bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl flex items-center justify-center mr-4 shadow-sm">
-                        <Heart className="h-5 w-5 text-purple-600" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-600 uppercase tracking-wide">Published</p>
-                        <p className="text-2xl font-bold text-gray-900 mt-1">{filteredMemories.length}</p>
-                      </div>
-                    </div>
+                    <span className="text-xl font-semibold text-gray-900">{memories.length}</span>
                   </div>
                 </div>
+                
+                <div className="bg-white border border-gray-200 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <User className="h-4 w-4 text-green-600 mr-2" />
+                      <span className="text-sm text-gray-600">Grandparents</span>
+                    </div>
+                    <span className="text-xl font-semibold text-gray-900">{grandparents.length}</span>
+                  </div>
+                </div>
+                
+                <div className="bg-white border border-gray-200 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <Heart className="h-4 w-4 text-purple-600 mr-2" />
+                      <span className="text-sm text-gray-600">Published</span>
+                    </div>
+                    <span className="text-xl font-semibold text-gray-900">{filteredMemories.length}</span>
+                  </div>
+                </div>
+              </div>
 
-                {/* Filter Summary */}
-                <div className="mt-8 bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
-                  <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
-                    <Filter className="h-5 w-5 mr-2 text-blue-600" />
+              {/* Active Filters */}
+              {(searchTerm || selectedGrandparent !== 'all' || selectedType !== 'all') && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                  <h3 className="text-sm font-semibold text-blue-900 mb-3 flex items-center">
+                    <Filter className="h-4 w-4 mr-2" />
                     Active Filters
                   </h3>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                      <span className="text-sm font-medium text-gray-600">Search:</span>
-                      <span className="text-sm font-semibold text-gray-900 bg-gray-100 px-2 py-1 rounded-md">
-                        {searchTerm || 'None'}
+                  <div className="flex flex-wrap gap-2">
+                    {searchTerm && (
+                      <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                        Search: {searchTerm}
                       </span>
-                    </div>
-                    <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                      <span className="text-sm font-medium text-gray-600">Grandparent:</span>
-                      <span className="text-sm font-semibold text-gray-900 bg-blue-50 px-2 py-1 rounded-md">
-                        {selectedGrandparent === 'all' ? 'All' : grandparents.find(g => g.id === selectedGrandparent)?.name || 'Unknown'}
+                    )}
+                    {selectedGrandparent !== 'all' && (
+                      <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                        Grandparent: {grandparents.find(g => g.id === selectedGrandparent)?.name || 'Unknown'}
                       </span>
-                    </div>
-                    <div className="flex items-center justify-between py-2">
-                      <span className="text-sm font-medium text-gray-600">Type:</span>
-                      <span className="text-sm font-semibold text-gray-900 bg-green-50 px-2 py-1 rounded-md capitalize">
-                        {selectedType}
+                    )}
+                    {selectedType !== 'all' && (
+                      <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800 capitalize">
+                        Type: {selectedType}
                       </span>
-                    </div>
+                    )}
                   </div>
                 </div>
-              </div>
-            </ResizablePanel>
+              )}
+            </div>
 
-            <ResizableHandle withHandle />
-
-            {/* Right Panel - Memories Grid */}
-            <ResizablePanel defaultSize={70} minSize={60}>
-              <div className="h-full overflow-y-auto p-6 bg-white">
-                {/* Memories Header */}
-                <div className="mb-8">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-3 tracking-tight">
+            {/* Memories Section */}
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900">
                     {filteredMemories.length === 0 ? (
-                      <span className="text-gray-500">No Memories Found</span>
+                      'No Memories Found'
                     ) : (
-                      <>
-                        <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                          {filteredMemories.length}
-                        </span>
-                        <span className="text-gray-800 ml-2">Memories</span>
-                      </>
+                      `${filteredMemories.length} Memories`
                     )}
-                  </h2>
+                  </h3>
                   {filteredMemories.length > 0 && (
-                    <p className="text-base text-gray-600 font-medium">
+                    <p className="text-sm text-gray-600 mt-1">
                       {searchTerm || selectedGrandparent !== 'all' || selectedType !== 'all'
-                        ? '📋 Filtered results'
-                        : '📚 All published memories'}
+                        ? 'Filtered results'
+                        : 'All published memories'}
                     </p>
                   )}
                 </div>
-
-                {/* Memories Grid */}
-                {filteredMemories.length === 0 ? (
-                  <div className="text-center py-20">
-                    <div className="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
-                      <BookOpen className="h-10 w-10 text-gray-400" />
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-3">No memories found</h3>
-                    <p className="text-base text-gray-600 font-medium max-w-md mx-auto leading-relaxed">
-                      {searchTerm || selectedGrandparent !== 'all' || selectedType !== 'all'
-                        ? 'Try adjusting your filters to see more memories.'
-                        : 'Memories will appear here once grandparents start sharing their stories.'}
-                    </p>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
-                    {filteredMemories.map((memory) => (
-                      <MemoryCard
-                        key={memory.id}
-                        memory={memory}
-                        onClick={() => setSelectedMemory(memory)}
-                      />
-                    ))}
-                  </div>
-                )}
               </div>
-            </ResizablePanel>
-          </ResizablePanelGroup>
+
+              {/* Memories Grid */}
+              {filteredMemories.length === 0 ? (
+                <div className="text-center py-16">
+                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <BookOpen className="h-8 w-8 text-gray-400" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">No memories found</h3>
+                  <p className="text-sm text-gray-600 max-w-sm mx-auto">
+                    {searchTerm || selectedGrandparent !== 'all' || selectedType !== 'all'
+                      ? 'Try adjusting your filters to see more memories.'
+                      : 'Memories will appear here once grandparents start sharing their stories.'}
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {filteredMemories.map((memory) => (
+                    <MemoryCard
+                      key={memory.id}
+                      memory={memory}
+                      onClick={() => setSelectedMemory(memory)}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -287,7 +236,7 @@ export default function MemoryBlog() {
       )}
 
       {/* Demo Mode */}
-      <DemoMode />
+      {/* <DemoMode /> */}
     </SidebarInset>
   )
 }

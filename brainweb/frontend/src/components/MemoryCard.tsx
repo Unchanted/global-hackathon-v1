@@ -44,41 +44,38 @@ export default function MemoryCard({ memory, onClick }: MemoryCardProps) {
   return (
     <div
       onClick={onClick}
-      className="bg-white border border-gray-200 rounded-xl p-6 cursor-pointer hover:shadow-lg hover:border-blue-200 transition-all duration-200 group"
+      className="bg-white border border-gray-200 rounded-lg p-4 cursor-pointer hover:shadow-md hover:border-gray-300 transition-all duration-200"
     >
       {/* Header */}
-      <div className="flex items-start justify-between mb-5">
-        <div className="flex items-center space-x-2">
-          <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wide ${getMemoryTypeColor(memory.memory_type)}`}>
-            {getMemoryTypeIcon(memory.memory_type)}
-            <span className="ml-1.5 capitalize">{memory.memory_type}</span>
-          </span>
-        </div>
-        <div className="flex items-center text-gray-500 text-sm font-medium">
-          <Calendar className="h-4 w-4 mr-1.5" />
-          {format(new Date(memory.published_at || memory.created_at), 'MMM d, yyyy')}
-        </div>
+      <div className="flex items-center justify-between mb-3">
+        <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getMemoryTypeColor(memory.memory_type)}`}>
+          {getMemoryTypeIcon(memory.memory_type)}
+          <span className="ml-1 capitalize">{memory.memory_type}</span>
+        </span>
+        <span className="text-xs text-gray-500">
+          {format(new Date(memory.published_at || memory.created_at), 'MMM d')}
+        </span>
       </div>
 
       {/* Title */}
-      <h3 className="text-xl font-bold text-gray-900 mb-4 group-hover:text-blue-600 transition-colors line-clamp-2 leading-tight">
+      <h3 className="text-lg font-semibold text-gray-900 mb-3 line-clamp-2 leading-tight">
         {memory.title}
       </h3>
 
       {/* Content Preview */}
-      <p className="text-gray-600 text-sm leading-relaxed mb-5 line-clamp-3 font-medium">
-        {truncateContent(memory.content, 150)}
+      <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3">
+        {truncateContent(memory.content, 120)}
       </p>
 
       {/* Footer */}
-      <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-        <div className="flex items-center text-gray-600 text-sm font-semibold">
-          <User className="h-4 w-4 mr-2 text-blue-500" />
-          <span>{memory.grandparent?.name || 'Unknown Grandparent'}</span>
+      <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+        <div className="flex items-center text-gray-600 text-sm">
+          <User className="h-3 w-3 mr-1" />
+          <span>{memory.grandparent?.name || 'Unknown'}</span>
         </div>
-        <div className="flex items-center text-gray-500 text-sm font-medium">
-          <MessageCircle className="h-4 w-4 mr-1.5" />
-          <span>{memory.source_conversation_ids.length} parts</span>
+        <div className="flex items-center text-gray-500 text-xs">
+          <MessageCircle className="h-3 w-3 mr-1" />
+          <span>{memory.source_conversation_ids.length}</span>
         </div>
       </div>
     </div>
