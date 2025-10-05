@@ -6,18 +6,16 @@ import { format } from 'date-fns'
 import { Heart, MessageCircle, Calendar, User, BookOpen, Filter, Search } from 'lucide-react'
 import MemoryCard from '@/components/MemoryCard'
 import MemoryModal from '@/components/MemoryModal'
-import FilterSidebar from '@/components/FilterSidebar'
 import DemoMode from '@/components/DemoMode'
+import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
+import { useFilters } from '@/components/filter-context'
 
 export default function MemoryBlog() {
+  const { searchTerm, selectedGrandparent, selectedType } = useFilters()
   const [memories, setMemories] = useState<Memory[]>([])
   const [grandparents, setGrandparents] = useState<GrandparentProfile[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedMemory, setSelectedMemory] = useState<Memory | null>(null)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [selectedGrandparent, setSelectedGrandparent] = useState<string>('all')
-  const [selectedType, setSelectedType] = useState<string>('all')
-  const [showFilters, setShowFilters] = useState(false)
 
   useEffect(() => {
     fetchMemories()
@@ -69,131 +67,105 @@ export default function MemoryBlog() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading precious memories...</p>
+      <SidebarInset>
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading precious memories...</p>
+          </div>
         </div>
-      </div>
+      </SidebarInset>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <SidebarInset>
+      <div className="min-h-screen bg-white">
+        {/* Header */}
+        <header className="border-b border-gray-200 px-6 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="bg-indigo-600 p-2 rounded-lg">
-                <BookOpen className="h-6 w-6 text-white" />
+              <SidebarTrigger />
+              <div className="w-6 h-6 bg-gray-900 rounded flex items-center justify-center">
+                <BookOpen className="h-4 w-4 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Memory Keeper</h1>
-                <p className="text-sm text-gray-600">Family memories and stories</p>
+                <h1 className="text-sm font-medium text-gray-900">Memory Keeper</h1>
+                <p className="text-xs text-gray-500">Family memories and stories</p>
               </div>
             </div>
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center space-x-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-            >
-              <Filter className="h-4 w-4" />
-              <span>Filters</span>
-            </button>
           </div>
-        </div>
-      </header>
+        </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex gap-8">
-          {/* Sidebar */}
-          <FilterSidebar
-            showFilters={showFilters}
-            grandparents={grandparents}
-            selectedGrandparent={selectedGrandparent}
-            setSelectedGrandparent={setSelectedGrandparent}
-            selectedType={selectedType}
-            setSelectedType={setSelectedType}
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-          />
+        {/* Content Area */}
+        <div className="flex-1 overflow-y-auto p-8">
+          {/* Page Title */}
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Getting Started</h1>
+            <p className="text-lg text-gray-600">👋 Welcome to Memory Keeper!</p>
+          </div>
 
-          {/* Main Content */}
-          <div className="flex-1">
-            {/* Search Bar */}
-            <div className="mb-8">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search memories..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+          {/* Stats Row */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="bg-white border border-gray-200 rounded-md p-6">
+              <div className="flex items-center">
+                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                  <BookOpen className="h-5 w-5 text-blue-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Total Memories</p>
+                  <p className="text-2xl font-semibold text-gray-900">{memories.length}</p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white border border-gray-200 rounded-md p-6">
+              <div className="flex items-center">
+                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-4">
+                  <User className="h-5 w-5 text-green-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Grandparents</p>
+                  <p className="text-2xl font-semibold text-gray-900">{grandparents.length}</p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white border border-gray-200 rounded-md p-6">
+              <div className="flex items-center">
+                <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
+                  <Heart className="h-5 w-5 text-purple-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Published</p>
+                  <p className="text-2xl font-semibold text-gray-900">{filteredMemories.length}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Memories Grid */}
+          {filteredMemories.length === 0 ? (
+            <div className="text-center py-16">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <BookOpen className="h-8 w-8 notion-text-tertiary" />
+              </div>
+              <h3 className="text-lg font-medium text-black mb-2">No memories found</h3>
+              <p className="notion-text-secondary">
+                {searchTerm || selectedGrandparent !== 'all' || selectedType !== 'all'
+                  ? 'Try adjusting your filters to see more memories.'
+                  : 'Memories will appear here once grandparents start sharing their stories.'}
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filteredMemories.map((memory) => (
+                <MemoryCard
+                  key={memory.id}
+                  memory={memory}
+                  onClick={() => setSelectedMemory(memory)}
                 />
-              </div>
+              ))}
             </div>
-
-            {/* Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <div className="bg-white p-6 rounded-lg shadow-sm">
-                <div className="flex items-center">
-                  <div className="p-2 bg-blue-100 rounded-lg">
-                    <BookOpen className="h-6 w-6 text-blue-600" />
-                  </div>
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Total Memories</p>
-                    <p className="text-2xl font-bold text-gray-900">{memories.length}</p>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-white p-6 rounded-lg shadow-sm">
-                <div className="flex items-center">
-                  <div className="p-2 bg-green-100 rounded-lg">
-                    <User className="h-6 w-6 text-green-600" />
-                  </div>
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Grandparents</p>
-                    <p className="text-2xl font-bold text-gray-900">{grandparents.length}</p>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-white p-6 rounded-lg shadow-sm">
-                <div className="flex items-center">
-                  <div className="p-2 bg-purple-100 rounded-lg">
-                    <Heart className="h-6 w-6 text-purple-600" />
-                  </div>
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Published</p>
-                    <p className="text-2xl font-bold text-gray-900">{filteredMemories.length}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Memories Grid */}
-            {filteredMemories.length === 0 ? (
-              <div className="text-center py-12">
-                <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No memories found</h3>
-                <p className="text-gray-600">
-                  {searchTerm || selectedGrandparent !== 'all' || selectedType !== 'all'
-                    ? 'Try adjusting your filters to see more memories.'
-                    : 'Memories will appear here once grandparents start sharing their stories.'}
-                </p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredMemories.map((memory) => (
-                  <MemoryCard
-                    key={memory.id}
-                    memory={memory}
-                    onClick={() => setSelectedMemory(memory)}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
+          )}
         </div>
       </div>
 
@@ -207,6 +179,6 @@ export default function MemoryBlog() {
 
       {/* Demo Mode */}
       <DemoMode />
-    </div>
+    </SidebarInset>
   )
 }

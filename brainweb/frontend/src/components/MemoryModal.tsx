@@ -83,9 +83,9 @@ export default function MemoryModal({ memory, onClose }: MemoryModalProps) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden">
+      <div className="bg-white rounded max-w-4xl w-full max-h-[90vh] overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b">
+        <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <div className="flex items-center space-x-3">
             <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getMemoryTypeColor(memory.memory_type)}`}>
               {getMemoryTypeIcon(memory.memory_type)}
@@ -98,9 +98,9 @@ export default function MemoryModal({ memory, onClose }: MemoryModalProps) {
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-100 rounded transition-colors"
           >
-            <X className="h-5 w-5" />
+            <X className="h-4 w-4" />
           </button>
         </div>
 
@@ -128,15 +128,15 @@ export default function MemoryModal({ memory, onClose }: MemoryModalProps) {
 
           {/* Story Parts */}
           {conversations.length > 0 && (
-            <div className="border-t pt-6">
+            <div className="border-t border-gray-200 pt-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
                 Story Parts ({conversations.length})
               </h3>
               
               {loading ? (
                 <div className="text-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto mb-2"></div>
-                  <p className="text-gray-600">Loading story parts...</p>
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto mb-2"></div>
+                  <p className="text-gray-600 text-sm">Loading story parts...</p>
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -166,7 +166,7 @@ export default function MemoryModal({ memory, onClose }: MemoryModalProps) {
                   )}
 
                   {/* Current Part */}
-                  <div className="bg-white border rounded-lg p-4">
+                  <div className="bg-white border border-gray-200 rounded-lg p-4">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-sm text-gray-500">
                         Part {currentPart + 1}
@@ -190,7 +190,7 @@ export default function MemoryModal({ memory, onClose }: MemoryModalProps) {
                           onClick={() => setCurrentPart(index)}
                           className={`p-3 rounded-lg cursor-pointer transition-colors ${
                             index === currentPart
-                              ? 'bg-indigo-50 border border-indigo-200'
+                              ? 'bg-blue-50 border border-blue-200'
                               : 'bg-gray-50 hover:bg-gray-100'
                           }`}
                         >
@@ -216,7 +216,7 @@ export default function MemoryModal({ memory, onClose }: MemoryModalProps) {
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t bg-gray-50">
+        <div className="p-6 border-t border-gray-200 bg-gray-50">
           <div className="flex items-center justify-between">
             <div className="flex items-center text-gray-600 text-sm">
               <MessageCircle className="h-4 w-4 mr-1" />
@@ -225,7 +225,7 @@ export default function MemoryModal({ memory, onClose }: MemoryModalProps) {
             <div className="flex items-center space-x-4">
               <button
                 onClick={onClose}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Close
               </button>

@@ -44,43 +44,41 @@ export default function MemoryCard({ memory, onClick }: MemoryCardProps) {
   return (
     <div
       onClick={onClick}
-      className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer overflow-hidden group"
+      className="bg-white border border-gray-200 rounded-md p-6 cursor-pointer hover:shadow-sm transition-shadow group"
     >
       {/* Header */}
-      <div className="p-6 pb-4">
-        <div className="flex items-start justify-between mb-3">
-          <div className="flex items-center space-x-2">
-            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getMemoryTypeColor(memory.memory_type)}`}>
-              {getMemoryTypeIcon(memory.memory_type)}
-              <span className="ml-1 capitalize">{memory.memory_type}</span>
-            </span>
-          </div>
-          <div className="flex items-center text-gray-500 text-sm">
-            <Calendar className="h-4 w-4 mr-1" />
-            {format(new Date(memory.published_at || memory.created_at), 'MMM d, yyyy')}
-          </div>
+      <div className="flex items-start justify-between mb-4">
+        <div className="flex items-center space-x-2">
+          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getMemoryTypeColor(memory.memory_type)}`}>
+            {getMemoryTypeIcon(memory.memory_type)}
+            <span className="ml-1 capitalize">{memory.memory_type}</span>
+          </span>
         </div>
-
-        <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-indigo-600 transition-colors">
-          {memory.title}
-        </h3>
-
-        <p className="text-gray-600 text-sm leading-relaxed">
-          {truncateContent(memory.content)}
-        </p>
+        <div className="flex items-center text-gray-500 text-sm">
+          <Calendar className="h-4 w-4 mr-1" />
+          {format(new Date(memory.published_at || memory.created_at), 'MMM d, yyyy')}
+        </div>
       </div>
 
+      {/* Title */}
+      <h3 className="text-lg font-semibold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors line-clamp-2">
+        {memory.title}
+      </h3>
+
+      {/* Content Preview */}
+      <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3">
+        {truncateContent(memory.content, 150)}
+      </p>
+
       {/* Footer */}
-      <div className="px-6 py-4 bg-gray-50 border-t">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center text-gray-500 text-sm">
-            <User className="h-4 w-4 mr-1" />
-            <span>{memory.grandparent?.name || 'Unknown Grandparent'}</span>
-          </div>
-          <div className="flex items-center text-gray-500 text-sm">
-            <MessageCircle className="h-4 w-4 mr-1" />
-            <span>{memory.source_conversation_ids.length} parts</span>
-          </div>
+      <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+        <div className="flex items-center text-gray-500 text-sm">
+          <User className="h-4 w-4 mr-1" />
+          <span>{memory.grandparent?.name || 'Unknown Grandparent'}</span>
+        </div>
+        <div className="flex items-center text-gray-500 text-sm">
+          <MessageCircle className="h-4 w-4 mr-1" />
+          <span>{memory.source_conversation_ids.length} parts</span>
         </div>
       </div>
     </div>

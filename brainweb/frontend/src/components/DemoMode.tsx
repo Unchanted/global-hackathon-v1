@@ -74,7 +74,7 @@ export default function DemoMode() {
       <div className="fixed bottom-4 right-4 z-50">
         <button
           onClick={() => setShowDemo(true)}
-          className="bg-indigo-600 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-indigo-700 transition-colors"
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow-lg hover:bg-blue-700 transition-colors"
         >
           🎭 Demo Mode
         </button>
@@ -84,13 +84,13 @@ export default function DemoMode() {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden">
-        <div className="p-6 border-b">
+      <div className="bg-white rounded max-w-4xl w-full max-h-[90vh] overflow-hidden">
+        <div className="p-6 border-b border-gray-200">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-bold text-gray-900">Demo Mode</h2>
             <button
               onClick={() => setShowDemo(false)}
-              className="text-gray-500 hover:text-gray-700"
+              className="p-2 hover:bg-gray-100 rounded transition-colors"
             >
               ✕
             </button>
@@ -99,7 +99,7 @@ export default function DemoMode() {
         
         <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
           <div className="mb-6">
-            <p className="text-gray-600 mb-4">
+            <p className="text-gray-600 mb-4 text-sm">
               This is demo data to show how the Memory Keeper frontend works. 
               In a real setup, this data would come from your Supabase database.
             </p>
@@ -153,14 +153,14 @@ export default function DemoMode() {
           </div>
         </div>
         
-        <div className="p-6 border-t bg-gray-50">
+        <div className="p-6 border-t border-gray-200 bg-gray-50">
           <div className="flex items-center justify-between">
             <p className="text-sm text-gray-600">
               To use with real data, configure your Supabase connection in .env.local
             </p>
             <button
               onClick={() => setShowDemo(false)}
-              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
               Close Demo
             </button>
