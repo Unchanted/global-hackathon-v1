@@ -83,12 +83,12 @@ export default function MemoryBlog() {
   return (
     <SidebarInset>
       <div className="h-screen bg-white flex flex-col">
-        {/* Header */}
-        <header className="border-b border-gray-200 px-6 py-4 bg-gradient-to-r from-blue-50 to-indigo-50">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <SidebarTrigger />
-              {sidebarState === 'collapsed' && (
+        {/* Header - Only show when sidebar is collapsed */}
+        {sidebarState === 'collapsed' && (
+          <header className="border-b border-gray-200 px-6 py-4 bg-gradient-to-r from-blue-50 to-indigo-50">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <SidebarTrigger />
                 <div className="flex items-center space-x-4 animate-in fade-in-0 slide-in-from-left-2 duration-200">
                   <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-lg flex items-center justify-center shadow-sm">
                     <BookOpen className="h-5 w-5 text-white" />
@@ -103,14 +103,27 @@ export default function MemoryBlog() {
                     <p className="text-sm text-gray-600 font-medium">Family memories and stories</p>
                   </div>
                 </div>
-              )}
+              </div>
             </div>
-          </div>
-        </header>
+          </header>
+        )}
 
         {/* Content Area with Resizable Layout */}
         <div className="flex-1 overflow-hidden">
-          <ResizablePanelGroup direction="horizontal" className="h-full">
+          {/* Sidebar Trigger - Only show when sidebar is expanded */}
+          {sidebarState === 'expanded' && (
+            <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+              <div className="flex items-center">
+                <SidebarTrigger />
+                <div className="ml-3">
+                  <h2 className="text-sm font-semibold text-gray-700">Memory Dashboard</h2>
+                  <p className="text-xs text-gray-500">Toggle sidebar to see navigation</p>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          <ResizablePanelGroup direction="horizontal" className={`${sidebarState === 'expanded' ? 'h-[calc(100%-72px)]' : 'h-full'}`}>
             {/* Left Panel - Stats and Overview */}
             <ResizablePanel defaultSize={30} minSize={20} maxSize={40}>
               <div className="h-full overflow-y-auto p-6 bg-gradient-to-br from-gray-50 to-blue-50">
@@ -118,12 +131,12 @@ export default function MemoryBlog() {
                 <div className="mb-8">
                   {sidebarState === 'expanded' && (
                     <div className="animate-in fade-in-0 slide-in-from-top-2 duration-200">
-                      <h1 className="text-3xl font-bold text-gray-900 mb-3 tracking-tight">
+                      {/* <h1 className="text-3xl font-bold text-gray-900 mb-3 tracking-tight">
                         <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                           Memory
                         </span>
                         <span className="text-gray-800 ml-2">Dashboard</span>
-                      </h1>
+                      </h1> */}
                       <p className="text-base text-gray-600 font-medium flex items-center">
                         <span className="text-lg mr-2">👋</span>
                         Welcome to <span className="font-semibold text-blue-600 ml-1">Memory Keeper</span>!
