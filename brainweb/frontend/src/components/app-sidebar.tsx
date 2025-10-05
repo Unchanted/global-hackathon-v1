@@ -24,8 +24,7 @@ import {
   Search, 
   Heart, 
   Calendar,
-  MessageCircle,
-  Settings
+  MessageCircle
 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 
@@ -80,17 +79,6 @@ export function AppSidebar() {
                     <span className="text-gray-800 ml-1">Keeper</span>
                   </span>
                   <span className="truncate text-xs text-gray-600 font-medium">Family story collection</span>
-                  <div className="flex items-center mt-1">
-                    <div className="w-full bg-blue-200 rounded-full h-1.5">
-                      <div 
-                        className="bg-gradient-to-r from-blue-500 to-indigo-500 h-1.5 rounded-full transition-all duration-1000 ease-out"
-                        style={{ width: `${Math.min((grandparents.length / 5) * 100, 100)}%` }}
-                      ></div>
-                    </div>
-                    <span className="text-xs text-blue-600 ml-2 font-medium">
-                      {grandparents.length}/5
-                    </span>
-                  </div>
                 </div>
               </div>
             </SidebarMenuButton>
@@ -253,27 +241,6 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-
-      <SidebarFooter className="border-t border-sidebar-border bg-gradient-to-r from-gray-50 to-blue-50">
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild>
-              <div className="flex items-center gap-3 px-3 py-3 group">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-gradient-to-br from-gray-500 to-gray-600 text-white group-hover:scale-110 transition-transform duration-300">
-                  <Settings className="size-4" />
-                </div>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold text-gray-800">Settings</span>
-                  <span className="truncate text-xs text-gray-600">App preferences</span>
-                </div>
-                <div className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
-                  ⚙️
-                </div>
-              </div>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
     </Sidebar>
   )
 }

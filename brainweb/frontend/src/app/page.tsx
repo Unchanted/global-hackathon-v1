@@ -5,7 +5,6 @@ import { supabase, Memory, GrandparentProfile } from '@/lib/supabase'
 import { format } from 'date-fns'
 import { Heart, MessageCircle, Calendar, User, BookOpen, Filter, Search } from 'lucide-react'
 import MemoryCard from '@/components/MemoryCard'
-import MemoryModal from '@/components/MemoryModal'
 // import DemoMode from '@/components/DemoMode'
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
 import { useFilters } from '@/components/filter-context'
@@ -15,7 +14,6 @@ export default function MemoryBlog() {
   const [memories, setMemories] = useState<Memory[]>([])
   const [grandparents, setGrandparents] = useState<GrandparentProfile[]>([])
   const [loading, setLoading] = useState(true)
-  const [selectedMemory, setSelectedMemory] = useState<Memory | null>(null)
 
   useEffect(() => {
     fetchMemories()
@@ -307,7 +305,6 @@ export default function MemoryBlog() {
                     <MemoryCard
                       key={memory.id}
                       memory={memory}
-                      onClick={() => setSelectedMemory(memory)}
                     />
                   ))}
                 </div>
@@ -316,14 +313,6 @@ export default function MemoryBlog() {
           </div>
         </div>
       </div>
-
-      {/* Memory Modal */}
-      {selectedMemory && (
-        <MemoryModal
-          memory={selectedMemory}
-          onClose={() => setSelectedMemory(null)}
-        />
-      )}
 
       {/* Demo Mode */}
       {/* <DemoMode /> */}

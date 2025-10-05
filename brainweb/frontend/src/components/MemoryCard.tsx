@@ -3,13 +3,18 @@
 import { Memory } from '@/lib/supabase'
 import { format } from 'date-fns'
 import { Calendar, User, MessageCircle, Heart, BookOpen } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 interface MemoryCardProps {
   memory: Memory
-  onClick: () => void
 }
 
-export default function MemoryCard({ memory, onClick }: MemoryCardProps) {
+export default function MemoryCard({ memory }: MemoryCardProps) {
+  const router = useRouter()
+
+  const handleClick = () => {
+    router.push(`/memory/${memory.id}`)
+  }
   const getMemoryTypeIcon = (type: string) => {
     switch (type) {
       case 'story':
@@ -43,7 +48,7 @@ export default function MemoryCard({ memory, onClick }: MemoryCardProps) {
 
   return (
     <div
-      onClick={onClick}
+      onClick={handleClick}
       className="bg-white border border-gray-200 rounded-xl p-4 cursor-pointer hover:shadow-lg hover:border-blue-300 transition-all duration-300 group hover:-translate-y-1"
     >
       {/* Header */}
