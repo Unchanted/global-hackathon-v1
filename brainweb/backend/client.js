@@ -267,7 +267,7 @@ client.on('message', async (msg) => {
                         console.log('📚 Story theme:', completedStory.theme);
                     }
                 }
-            } else if (intent.memory_type && intent.intent === 'memory_capture' && intent.story_status !== 'continuing') {
+            } else if (intent.memory_type && (intent.intent === 'memory_capture' || intent.intent === 'story_start') && intent.story_status !== 'continuing') {
                 // Create memory for single-message stories
                 console.log('💾 Creating memory for single message story...');
                 
