@@ -1,7 +1,7 @@
 require('dotenv').config();
 const { Client } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
-const { getIntent, getActiveStorySession, getCompletedStoryContent } = require('./services/intent.js');
+const { getIntent, getActiveStorySession, getCompletedStoryContent, getUserName, hasUserCompletedNameCollection } = require('./services/intent.js');
 const { SupabaseService } = require('./services/supabase-client.js');
 
 // Initialize services
@@ -50,11 +50,12 @@ client.on('message', async (msg) => {
             console.log('👴 Creating new grandparent profile for:', userId);
             const { data: newGrandparent, error } = await supabase.createGrandparent(
                 userId, 
-                `Grandparent ${userId}`, // Default name, can be updated later
+                `Grandparent ${userId}`, // Default name, will be updated when name is collected
                 { 
                     first_message: msg.timestamp,
                     whatsapp_id: msg.from,
-                    created_via: 'whatsapp_bot'
+                    created_via: 'whatsapp_bot',
+                    name_collection_status: 'pending'
                 }
             );
             if (error) {
@@ -99,6 +100,33 @@ client.on('message', async (msg) => {
         
         // Parse the JSON response and handle accordingly
         const intent = JSON.parse(intentResponse);
+        
+        // Handle name collection completion
+        if (intent.intent === 'name_collection_complete' && intent.collected_name) {
+            console.log('📝 Updating grandparent name to:', intent.collected_name);
+            
+            // Update the grandparent profile with the collected name
+            const { error: updateError } = await supabase.client
+                .from('grandparent_profiles')
+                .update({ 
+                    name: intent.collected_name,
+                    metadata: {
+                        ...grandparent.data.metadata,
+                        name_collection_status: 'completed',
+                        collected_name: intent.collected_name,
+                        name_collected_at: new Date().toISOString()
+                    }
+                })
+                .eq('id', grandparent.data.id);
+            
+            if (updateError) {
+                console.error('❌ Error updating grandparent name:', updateError);
+            } else {
+                console.log('✅ Updated grandparent name to:', intent.collected_name);
+                // Update local grandparent object
+                grandparent.data.name = intent.collected_name;
+            }
+        }
         
         if (intent.message) {
             console.log('Would send message:\n', intent.message);

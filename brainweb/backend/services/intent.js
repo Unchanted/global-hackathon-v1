@@ -6,12 +6,118 @@ const userConversations = new Map();
 // Store active story sessions for each user
 const userStorySessions = new Map();
 
+// Store user states (for name collection, etc.)
+const userStates = new Map();
+
+// Function to handle name collection for new users
+function handleNameCollection(userMessage, userId, userState) {
+  console.log(`📝 Handling name collection for user ${userId}`);
+  
+  // If no user state exists, this is the very first message
+  if (!userState) {
+    userStates.set(userId, {
+      nameCollected: false,
+      nameCollectionStep: 'asking',
+      attempts: 0
+    });
+    
+    return JSON.stringify({
+      intent: "name_collection",
+      message: "Hello! I'm so happy you're here! 😊 I'm your Memory Keeper, and I'd love to help you share your wonderful life stories and memories with your family.\n\nTo get started, could you please tell me your name? This will help me personalize our conversations and make your memories even more special.",
+      memory_type: "general",
+      story_status: "none",
+      story_theme: "",
+      user_state: "collecting_name"
+    });
+  }
+  
+  // If we're collecting the name, process the response
+  if (userState.nameCollectionStep === 'asking') {
+    let name = userMessage.trim();
+    
+    // Extract name from common patterns
+    if (name.toLowerCase().includes('my name is')) {
+      name = name.replace(/my name is/gi, '').trim();
+    } else if (name.toLowerCase().includes('i am')) {
+      name = name.replace(/i am/gi, '').trim();
+    } else if (name.toLowerCase().includes('i\'m')) {
+      name = name.replace(/i\'m/gi, '').trim();
+    }
+    
+    // Basic validation - check if it looks like a name
+    if (name.length < 2 || name.length > 50) {
+      userState.attempts++;
+      
+      if (userState.attempts >= 3) {
+        // After 3 attempts, use a default name
+        userState.nameCollected = true;
+        userState.nameCollectionStep = 'completed';
+        userState.collectedName = 'Grandparent';
+        userStates.set(userId, userState);
+        
+        return JSON.stringify({
+          intent: "name_collection_complete",
+          message: "That's okay! I'll call you Grandparent for now. You can always tell me your name later if you'd like.\n\nNow, I'd love to hear about your life! What's a memory or story you'd like to share with your family?",
+          memory_type: "general",
+          story_status: "none",
+          story_theme: "",
+          user_state: "name_collected",
+          collected_name: "Grandparent"
+        });
+      }
+      
+      return JSON.stringify({
+        intent: "name_collection",
+        message: "I'd love to know your name! Could you please share your first name? It helps me make our conversations more personal. 😊",
+        memory_type: "general",
+        story_status: "none",
+        story_theme: "",
+        user_state: "collecting_name"
+      });
+    }
+    
+    // Name looks good, collect it
+    userState.nameCollected = true;
+    userState.nameCollectionStep = 'completed';
+    userState.collectedName = name;
+    userStates.set(userId, userState);
+    
+    return JSON.stringify({
+      intent: "name_collection_complete",
+      message: `Hello ${name}! It's wonderful to meet you! 🌟\n\nI'm here to help you share your precious memories and life stories with your family. Your stories are treasures that deserve to be preserved and shared.\n\nWhat would you like to tell me about today? Maybe a memory from your childhood, or a story about your family? I'm all ears! 😊`,
+      memory_type: "general",
+      story_status: "none",
+      story_theme: "",
+      user_state: "name_collected",
+      collected_name: name
+    });
+  }
+  
+  // Fallback
+  return JSON.stringify({
+    intent: "greeting",
+    message: "Hello! I'm your Memory Keeper. What would you like to share with me today?",
+    memory_type: "general",
+    story_status: "none",
+    story_theme: ""
+  });
+}
+
 async function getIntent(userMessage, userId) {
   console.log('Received message from', userId, ':', userMessage);
   
   try {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+
+    // Check if this is a new user (first conversation)
+    const userState = userStates.get(userId);
+    const isNewUser = !userState || !userState.nameCollected;
+
+    // Handle name collection for new users
+    if (isNewUser) {
+      return handleNameCollection(userMessage, userId, userState);
+    }
 
     // Get or create conversation history for this user
     if (!userConversations.has(userId)) {
@@ -43,6 +149,9 @@ async function getIntent(userMessage, userId) {
       conversationContext += `Story theme: ${storySession.theme}\n`;
     }
 
+    // Get user's name for personalization
+    const userName = getUserName(userId);
+
     const prompt = `You are a warm, patient, and encouraging AI assistant helping grandparents share their life memories and stories through WhatsApp conversations.
 
 Your role is to:
@@ -62,16 +171,18 @@ STORY DETECTION RULES:
 
 ${conversationContext}
 
+The grandparent's name is ${userName}.
+
 The grandparent just said: "${userMessage}"
 
-${isContinuingStory ? 'This is part of an ongoing story. ' : ''}Respond in a warm, conversational way that encourages them to share more about their memory or story. Keep it brief but engaging. Ask follow-up questions that help them remember more details.
+${isContinuingStory ? 'This is part of an ongoing story. ' : ''}Respond in a warm, conversational way that encourages them to share more about their memory or story. Use their name (${userName}) naturally in your response to make it more personal. Keep it brief but engaging. Ask follow-up questions that help them remember more details.
 
 Examples of good responses:
-- "That sounds wonderful! What was your favorite part about that time?"
-- "I'd love to hear more about that! What was happening in your life then?"
-- "That's such a beautiful memory! How did that make you feel?"
-- "Tell me more about that person - what were they like?"
-- "What happened next in that story?"
+- "That sounds wonderful, ${userName}! What was your favorite part about that time?"
+- "I'd love to hear more about that, ${userName}! What was happening in your life then?"
+- "That's such a beautiful memory, ${userName}! How did that make you feel?"
+- "Tell me more about that person, ${userName} - what were they like?"
+- "What happened next in that story, ${userName}?"
 
 Respond with a JSON object in this format:
 {
@@ -214,4 +325,16 @@ function getCompletedStoryContent(userId) {
   return null;
 }
 
-module.exports = { getIntent, getActiveStorySession, getCompletedStoryContent };
+// Function to get user's collected name
+function getUserName(userId) {
+  const userState = userStates.get(userId);
+  return userState?.collectedName || 'Grandparent';
+}
+
+// Function to check if user has completed name collection
+function hasUserCompletedNameCollection(userId) {
+  const userState = userStates.get(userId);
+  return userState?.nameCollected || false;
+}
+
+module.exports = { getIntent, getActiveStorySession, getCompletedStoryContent, getUserName, hasUserCompletedNameCollection };
