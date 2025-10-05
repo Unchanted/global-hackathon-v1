@@ -10,8 +10,26 @@ class OnboardingService {
   getOnboardingSteps() {
     return [
       {
+        step: 'welcome',
+        question: `Hello! 😊 I'm so happy you're here!
+
+I'm your Memory Keeper - I help grandparents like you share their precious life stories and memories with their family.
+
+You can talk to me in lots of ways:
+• Just type your stories naturally
+• Send voice messages and I'll understand them
+• Share photos and I'll help you remember the stories behind them
+• Send videos of special moments
+
+I'll help you remember details, ask questions to help you share more, and organize everything into beautiful memories that your family will treasure forever.
+
+Ready to get started? Just say "yes" or anything really! 😊`,
+        field: null,
+        validation: () => true
+      },
+      {
         step: 'name',
-        question: "Hello! I'm so happy you're here! 😊 I'm your Memory Keeper, and I'd love to help you share your wonderful life stories and memories with your family.\n\nTo get started, could you please tell me your name? This will help me personalize our conversations and make your memories even more special.",
+        question: "Wonderful! Let's get to know each other! 😊\n\nTo make our conversations more personal and special, could you please tell me your name?",
         field: 'name',
         validation: (value) => value && value.length >= 2 && value.length <= 50
       },
@@ -84,9 +102,11 @@ class OnboardingService {
     
     // Validate the response
     if (field && !currentStep.validation(processedValue)) {
+      const errorMessage = `I'd love to get that information from you, {name}! Could you please try again? ${currentStep.question.split('\n\n')[1] || ''}`;
+      
       return {
         step: currentStep.step,
-        question: `I'd love to get that information from you, {name}! Could you please try again? ${currentStep.question.split('\n\n')[1] || ''}`,
+        question: this.formatQuestion(errorMessage, onboarding.data),
         isValid: false,
         completed: false
       };
