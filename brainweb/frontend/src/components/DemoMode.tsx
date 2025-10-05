@@ -98,11 +98,19 @@ export default function DemoMode() {
         </div>
         
         <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
-          <div className="mb-6">
-            <p className="text-gray-600 mb-4 text-sm">
-              This is demo data to show how the Memory Keeper frontend works. 
-              In a real setup, this data would come from your Supabase database.
-            </p>
+            <div className="mb-6">
+              <p className="text-gray-600 mb-4 text-sm">
+                This is demo data to show how the Memory Keeper frontend works. 
+                In a real setup, this data would come from your Supabase database.
+              </p>
+              
+              <div className="bg-blue-50 p-4 rounded-lg mb-4">
+                <h3 className="font-semibold text-blue-900 mb-2">✨ New Feature: Resizable Layout</h3>
+                <p className="text-blue-800 text-sm">
+                  The main dashboard now features a resizable layout! You can drag the handle between 
+                  the stats panel and memories grid to adjust the layout to your preference.
+                </p>
+              </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div className="bg-blue-50 p-4 rounded-lg">

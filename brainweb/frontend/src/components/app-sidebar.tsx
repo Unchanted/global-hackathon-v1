@@ -64,17 +64,22 @@ export function AppSidebar() {
 
   return (
     <Sidebar>
-      <SidebarHeader>
+      <SidebarHeader className="border-b border-sidebar-border bg-gradient-to-r from-blue-50 to-indigo-50">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <div className="flex items-center gap-2 px-2 py-1.5">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  <BookOpen className="size-4" />
+              <div className="flex items-center gap-3 px-3 py-3">
+                <div className="flex aspect-square size-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white shadow-sm">
+                  <BookOpen className="size-5" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">Memory Keeper</span>
-                  <span className="truncate text-xs">Family memories</span>
+                  <span className="truncate font-bold text-gray-900 text-lg">
+                    <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                      Memory
+                    </span>
+                    <span className="text-gray-800 ml-1">Keeper</span>
+                  </span>
+                  <span className="truncate text-sm font-medium text-gray-600">Family memories and stories</span>
                 </div>
               </div>
             </SidebarMenuButton>
@@ -85,7 +90,10 @@ export function AppSidebar() {
       <SidebarContent>
         {/* Search */}
         <SidebarGroup>
-          <SidebarGroupLabel>Search</SidebarGroupLabel>
+          <SidebarGroupLabel className="font-bold text-gray-900 flex items-center">
+            <Search className="h-4 w-4 mr-2 text-blue-600" />
+            Search
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <div className="px-2">
               <div className="relative">
@@ -105,7 +113,10 @@ export function AppSidebar() {
 
         {/* Grandparents Filter */}
         <SidebarGroup>
-          <SidebarGroupLabel>Grandparents</SidebarGroupLabel>
+          <SidebarGroupLabel className="font-bold text-gray-900 flex items-center">
+            <User className="h-4 w-4 mr-2 text-green-600" />
+            Grandparents
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
@@ -136,7 +147,10 @@ export function AppSidebar() {
 
         {/* Memory Types Filter */}
         <SidebarGroup>
-          <SidebarGroupLabel>Memory Types</SidebarGroupLabel>
+          <SidebarGroupLabel className="font-bold text-gray-900 flex items-center">
+            <BookOpen className="h-4 w-4 mr-2 text-purple-600" />
+            Memory Types
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {memoryTypes.map((type) => (
@@ -164,8 +178,8 @@ export function AppSidebar() {
                   <Settings className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">Settings</span>
-                  <span className="truncate text-xs">App preferences</span>
+                  <span className="truncate font-bold text-gray-900">Settings</span>
+                  <span className="truncate text-xs font-medium text-gray-600">App preferences</span>
                 </div>
               </div>
             </SidebarMenuButton>
